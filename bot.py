@@ -10,21 +10,19 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+GENIUS_TOKEN = os.getenv("GENIUS_TOKEN")
+
+if not GENIUS_TOKEN:
+    GENIUS_TOKEN = "alXXDbPZtK1m2RrZ8I4k2Hn8Ahsd0Gh_o076HYvcdlBvmc0ULL1H8Z8xRlew5qaG"
 
 # ===== PATHS =====
 CONFIG_DIR = "/root/.config/spotdl"
 CONFIG_PATH = f"{CONFIG_DIR}/config.json"
-MUSIC_OUTPUT = "/music/{artist}/{title}.{ext}"
+MUSIC_OUTPUT = "/music/{artist}/{title}.{output-ext}"
 
 # ===== BOT SETTINGS =====
 BUFFER_TIME = 5  # seconds between telegram updates
 SPOTIFY_REGEX = r"(https?://open\.spotify\.com/track/[a-zA-Z0-9]+)"
-
-# ===== SETUP SPOTDL CONFIG =====
-os.makedirs(CONFIG_DIR, exist_ok=True)
-
-if not os.path.exists(CONFIG_PATH):
-    subprocess.run(["spotdl", "--generate-config"], check=True)
 
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
@@ -32,6 +30,7 @@ with open(CONFIG_PATH, "r") as f:
 config.setdefault("spotify", {})
 config["spotify"]["client_id"] = SPOTIFY_CLIENT_ID
 config["spotify"]["client_secret"] = SPOTIFY_CLIENT_SECRET
+config["spotify"]["genius_token"] = GENIUS_TOKEN
 config["output"] = MUSIC_OUTPUT
 
 with open(CONFIG_PATH, "w") as f:

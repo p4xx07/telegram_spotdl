@@ -19,6 +19,10 @@ RUN pip install --upgrade pip setuptools wheel && \
 
 COPY bot.py .
 
+RUN mkdir -p /root/.config/spotdl
+RUN mkdir -p /tmp/.spotdl
+COPY config.json /root/.config/spotdl/config.json
+
 RUN mkdir -p /music
 
 CMD ["python", "bot.py"]
