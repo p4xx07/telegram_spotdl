@@ -12,9 +12,6 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 GENIUS_TOKEN = os.getenv("GENIUS_TOKEN")
 
-if not GENIUS_TOKEN:
-    GENIUS_TOKEN = "alXXDbPZtK1m2RrZ8I4k2Hn8Ahsd0Gh_o076HYvcdlBvmc0ULL1H8Z8xRlew5qaG"
-
 # ===== PATHS =====
 CONFIG_DIR = "/root/.config/spotdl"
 CONFIG_PATH = f"{CONFIG_DIR}/config.json"

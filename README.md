@@ -26,6 +26,7 @@ SPOTIFY_CLIENT_ID="your_spotify_client_id"
 SPOTIFY_CLIENT_SECRET="your_spotify_client_secret"
 ALLOWED_TELEGRAM_USERS=123456789,987654321
 BUFFER_TIME=5
+GENIUS_TOKEN="your_genius_token"
 ```
 
 TELEGRAM_TOKEN
@@ -49,6 +50,9 @@ BUFFER_TIME
 Number of seconds the bot waits before sending buffered SpotDL output back to Telegram.
 Higher value = fewer messages, calmer chats.
 Lower value = more updates, more noise, same download speed.
+
+GENIUS_TOKEN
+Uses genius for downloading lyrics
 
 ## Setup
 
