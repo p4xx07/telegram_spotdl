@@ -57,6 +57,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     for line in process.stdout:
         buffer.append(line.rstrip())
+        print(line)
 
         if time.time() - last_sent >= BUFFER_TIME:
             await update.message.reply_text(
