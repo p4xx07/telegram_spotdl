@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  spotify_bot:
+    build: .
+    container_name: spotify_bot
+    environment:
+      TELEGRAM_TOKEN: "your_telegram_token_here"
+      SPOTIFY_CLIENT_ID: "your_spotify_client_id_here"
+      SPOTIFY_CLIENT_SECRET: "your_spotify_client_secret_here"
+    volumes:
+      - ./music:/music
+    restart: unless-stopped
+
