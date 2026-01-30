@@ -1,43 +1,55 @@
 import os
 import re
-import subprocess
+import json
 import time
+import subprocess
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 
+# ===== ENV =====
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-CONFIG_PATH = "/app/spotdl.config.json"
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
+# ===== PATHS =====
+CONFIG_DIR = "/root/.config/spotdl"
+CONFIG_PATH = f"{CONFIG_DIR}/config.json"
+MUSIC_OUTPUT = "/music/{artist}/{title}.{ext}"
+
+# ===== BOT SETTINGS =====
+BUFFER_TIME = 5  # seconds between telegram updates
 SPOTIFY_REGEX = r"(https?://open\.spotify\.com/track/[a-zA-Z0-9]+)"
 
-BUFFER_TIME = 5  # seconds between messages
+# ===== SETUP SPOTDL CONFIG =====
+os.makedirs(CONFIG_DIR, exist_ok=True)
+
+if not os.path.exists(CONFIG_PATH):
+    subprocess.run(["spotdl", "--generate-config"], check=True)
+
+with open(CONFIG_PATH, "r") as f:
+    config = json.load(f)
+
+config.setdefault("spotify", {})
+config["spotify"]["client_id"] = SPOTIFY_CLIENT_ID
+config["spotify"]["client_secret"] = SPOTIFY_CLIENT_SECRET
+config["output"] = MUSIC_OUTPUT
+
+with open(CONFIG_PATH, "w") as f:
+    json.dump(config, f, indent=4)
 
 
-ALLOWED_USERS = {
-    int(uid)
-    for uid in os.getenv("ALLOWED_TELEGRAM_USERS", "").split(",")
-    if uid.strip().isdigit()
-}
-
-
+# ===== TELEGRAM HANDLER =====
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    if ALLOWED_USERS and user.id not in ALLOWED_USERS:
-        await update.message.reply_text(f"user not allowed")
-        return
-
-    text = update.message.text
+    text = update.message.text or ""
     match = re.search(SPOTIFY_REGEX, text)
     if not match:
-        await update.message.reply_text(f"this link is not valid: {text}...")
         return
 
     spotify_link = match.group(1)
-    await update.message.reply_text(f"Downloading {spotify_link}...")
+    await update.message.reply_text(f"Downloading:\n{spotify_link}")
 
-    # Run spotdl and capture stdout
     process = subprocess.Popen(
-        ["spotdl", "download", spotify_link, "--config", CONFIG_PATH],
+        ["spotdl", "download", spotify_link],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -48,34 +60,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_sent = time.time()
 
     for line in process.stdout:
-        buffer.append(line.strip())
-        # Send buffer every BUFFER_TIME seconds
-        if time.time() - last_sent > BUFFER_TIME:
-            if buffer:
-                await update.message.reply_text(
-                    "```\n" + "\n".join(buffer) + "\n```", parse_mode="Markdown"
-                )
-                buffer = []
-                last_sent = time.time()
+        buffer.append(line.rstrip())
 
-    # Send any remaining output
-    if buffer:
-        await update.message.reply_text(
-            "```\n" + "\n".join(buffer) + "\n```", parse_mode="Markdown"
-        )
+        if time.time() - last_sent >= BUFFER_TIME:
+            await update.message.reply_text(
+                "```\n" + "\n".join(buffer[-15:]) + "\n```", parse_mode="Markdown"
+            )
+            last_sent = time.time()
 
     process.wait()
+
     if process.returncode == 0:
-        await update.message.reply_text("Download complete!")
+        await update.message.reply_text("Download complete ✅")
     else:
-        await update.message.reply_text("Download failed.")
+        await update.message.reply_text("Download failed ❌")
 
 
-def main():
+# ===== MAIN =====
+if __name__ == "__main__":
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.run_polling()
-
-
-if __name__ == "__main__":
-    main()
