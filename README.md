@@ -24,7 +24,31 @@ Set in `docker-compose.yml`:
 TELEGRAM_TOKEN="your_telegram_bot_token"
 SPOTIFY_CLIENT_ID="your_spotify_client_id"
 SPOTIFY_CLIENT_SECRET="your_spotify_client_secret"
+ALLOWED_TELEGRAM_USERS=123456789,987654321
+BUFFER_TIME=5
 ```
+
+TELEGRAM_TOKEN
+The bot’s identity card. Telegram uses this to know which bot you’re pretending to be.
+If it’s missing or wrong, nothing starts. No bot, no messages, just silence.
+
+SPOTIFY_CLIENT_ID
+Your app ID from Spotify Developer Dashboard.
+SpotDL uses this to talk to Spotify’s API and fetch track metadata. Without it, downloads degrade or fail.
+
+SPOTIFY_CLIENT_SECRET
+The matching secret for the client ID.
+Think of it as the password Spotify expects along with the ID. Keep it private unless you enjoy revoking keys.
+
+ALLOWED_TELEGRAM_USERS
+A comma-separated list of Telegram numeric user IDs.
+If set, only these users can trigger downloads. Everyone else gets ignored.
+If unset or empty, the bot becomes democratic. Regret usually follows.
+
+BUFFER_TIME
+Number of seconds the bot waits before sending buffered SpotDL output back to Telegram.
+Higher value = fewer messages, calmer chats.
+Lower value = more updates, more noise, same download speed.
 
 ## Setup
 

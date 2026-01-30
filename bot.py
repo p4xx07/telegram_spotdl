@@ -13,10 +13,23 @@ SPOTIFY_REGEX = r"(https?://open\.spotify\.com/track/[a-zA-Z0-9]+)"
 BUFFER_TIME = 5  # seconds between messages
 
 
+ALLOWED_USERS = {
+    int(uid)
+    for uid in os.getenv("ALLOWED_TELEGRAM_USERS", "").split(",")
+    if uid.strip().isdigit()
+}
+
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    if ALLOWED_USERS and user.id not in ALLOWED_USERS:
+        await update.message.reply_text(f"user not allowed")
+        return
+
     text = update.message.text
     match = re.search(SPOTIFY_REGEX, text)
     if not match:
+        await update.message.reply_text(f"this link is not valid: {text}...")
         return
 
     spotify_link = match.group(1)
@@ -56,3 +69,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Download complete!")
     else:
         await update.message.reply_text("Download failed.")
+
+
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
