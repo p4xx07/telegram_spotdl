@@ -24,10 +24,9 @@ SPOTIFY_REGEX = r"(https?://open\.spotify\.com/track/[a-zA-Z0-9]+)"
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
 
-config.setdefault("spotify", {})
-config["spotify"]["client_id"] = SPOTIFY_CLIENT_ID
-config["spotify"]["client_secret"] = SPOTIFY_CLIENT_SECRET
-config["spotify"]["genius_token"] = GENIUS_TOKEN
+config["client_id"] = SPOTIFY_CLIENT_ID
+config["client_secret"] = SPOTIFY_CLIENT_SECRET
+config["genius_token"] = GENIUS_TOKEN
 config["output"] = MUSIC_OUTPUT
 
 with open(CONFIG_PATH, "w") as f:
