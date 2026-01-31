@@ -19,7 +19,7 @@ MUSIC_OUTPUT = "/music/{artist}/{title}.{output-ext}"
 
 # ===== BOT SETTINGS =====
 BUFFER_TIME = 5  # seconds between telegram updates
-SPOTIFY_REGEX = r"(https?://open\.spotify\.com/track/[a-zA-Z0-9]+)"
+SPOTIFY_REGEX = r"(https?://open\.spotify\.com/[^\s]+)"
 
 with open(CONFIG_PATH, "r") as f:
     config = json.load(f)
