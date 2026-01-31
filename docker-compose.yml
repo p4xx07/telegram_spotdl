@@ -7,7 +7,9 @@ services:
       TELEGRAM_TOKEN: "your_telegram_token_here"
       SPOTIFY_CLIENT_ID: "your_spotify_client_id_here"
       SPOTIFY_CLIENT_SECRET: "your_spotify_client_secret_here"
+      ALLOWED_TELEGRAM_USERS: "user1,user2"
+      GENIUS_TOKEN: "your_genius_token"
+      BUFFER_TIME: 5
     volumes:
       - ./music:/music
     restart: unless-stopped
-

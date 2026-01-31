@@ -32,9 +32,26 @@ config["output"] = MUSIC_OUTPUT
 with open(CONFIG_PATH, "w") as f:
     json.dump(config, f, indent=4)
 
+ALLOWED_TELEGRAM_USERS = os.getenv("ALLOWED_TELEGRAM_USERS")
+
+if ALLOWED_TELEGRAM_USERS:
+    ALLOWED_TELEGRAM_USERS = {
+        int(uid.strip())
+        for uid in ALLOWED_TELEGRAM_USERS.split(",")
+        if uid.strip().isdigit()
+    }
+else:
+    ALLOWED_TELEGRAM_USERS = None  # allow all
+
 
 # ===== TELEGRAM HANDLER =====
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if ALLOWED_TELEGRAM_USERS and user_id not in ALLOWED_TELEGRAM_USERS:
+        await update.message.reply_text("You are not allowed to use this bot.")
+        return
+
     text = update.message.text or ""
     match = re.search(SPOTIFY_REGEX, text)
     if not match:
