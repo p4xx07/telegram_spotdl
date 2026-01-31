@@ -2,6 +2,26 @@
 
 A Telegram bot that listens for Spotify track links and downloads them using [SpotDL](https://spotdl.github.io/). Downloads are sent to a local folder and organized by artist/title.
 
+## Install on a Server with Docker Compose
+
+```
+version: "3.9"
+services:
+  spotify_bot:
+    image: ghcr.io/p4xx07/telegram_spotdl:latest
+    environment:
+      TELEGRAM_TOKEN: "<TELEGRAM_TOKEN>"
+      SPOTIFY_CLIENT_ID: "<SPOTIFY_CLIENT_ID>"
+      SPOTIFY_CLIENT_SECRET: "<SPOTIFY_CLIENT_SECRET>"
+      ALLOWED_TELEGRAM_USERS: "<ALLOWED_TELEGRAM_USERS>"
+      GENIUS_TOKEN: "<GENIUS_TOKEN>"
+      BUFFER_TIME: 5
+    volumes:
+      - /volume/where/music/will/be/downloaded:/music
+    restart: unless-stopped
+```
+
+
 ## Features
 
 - Detects Spotify track links in Telegram chats.
