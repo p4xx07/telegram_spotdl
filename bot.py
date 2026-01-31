@@ -72,10 +72,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for line in process.stdout:
         print(line.rstrip())
 
-    if process.returncode == 0:
-        await update.message.reply_text("Download complete ✅")
-    else:
-        await update.message.reply_text("Download failed ❌")
+    await update.message.reply_text(
+        f"Download finished with returncode: {process.returncode}"
+    )
 
 
 # ===== MAIN =====
