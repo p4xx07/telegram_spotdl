@@ -55,6 +55,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text or ""
     match = re.search(SPOTIFY_REGEX, text)
     if not match:
+        await update.message.reply_text(f"insert a valid spotify url")
         return
 
     spotify_link = match.group(1)
