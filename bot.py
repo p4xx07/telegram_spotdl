@@ -69,20 +69,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bufsize=1,
     )
 
-    buffer = []
-    last_sent = time.time()
-
     for line in process.stdout:
-        buffer.append(line.rstrip())
-        print(line)
-
-        if time.time() - last_sent >= BUFFER_TIME:
-            await update.message.reply_text(
-                "```\n" + "\n".join(buffer[-15:]) + "\n```", parse_mode="Markdown"
-            )
-            last_sent = time.time()
-
-    process.wait()
+        print(line.rstrip())
 
     if process.returncode == 0:
         await update.message.reply_text("Download complete ✅")
